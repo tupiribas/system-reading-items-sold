@@ -9,23 +9,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Scanner;
 
 import entities.Produto;
 
 public class Program {
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.US);
-		
+		Scanner sc = new Scanner(System.in);
 		List<Produto> listProduct = new ArrayList<Produto>();
-		String path = "C:\\pastaarquivo\\a.csv";
+		
+		System.out.println("Digite um o caminho do arquivo: ");
+		String path = sc.nextLine();
 		
 		File p = new File(path);
 		String arquivoFonte = p.getParent();
 		
-		boolean succes = new File(arquivoFonte + "\\out").mkdir();
+		boolean succes = new File(arquivoFonte + "\\out").mkdir(); // criar arquivo out
 		
 		String arquivoDestino = arquivoFonte + "\\out\\summary.csv";
 		
+		// Leitura do arquivo da variável path
 		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			
 			String line = br.readLine();
@@ -38,7 +42,7 @@ public class Program {
 				listProduct.add(new Produto(nomeProduto, precoProduto, quantidadeProduto));
 				line = br.readLine();
 			}
-			
+			// Transcrevendo dados tratados para novo arquivo
 			try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDestino))) {
 				
 				for (Produto iten : listProduct) {
@@ -56,6 +60,7 @@ public class Program {
 			System.out.println(e.getMessage());
 		}
 		
+		sc.close();
 
 	}
 }
