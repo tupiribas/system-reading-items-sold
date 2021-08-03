@@ -24,4 +24,8 @@ public class Produto {
 		return quantidade;
 	}
 
+	public Double valorTotal() {
+		return preco * quantidade;
+	}
+	
 }

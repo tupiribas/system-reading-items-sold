@@ -1,42 +1,61 @@
 package application;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import entities.Produto;
 
 public class Program {
 	public static void main(String[] args) {
+		Locale.setDefault(Locale.US);
 		
-		Scanner sc = null;
-		File file = new File("C:\\pastaarquivo\\in.txt");
+		List<Produto> listProduct = new ArrayList<Produto>();
+		String path = "C:\\pastaarquivo\\a.csv";
 		
-		try {
-			String[] i = new String[3];
+		File p = new File(path);
+		String arquivoFonte = p.getParent();
+		
+		boolean succes = new File(arquivoFonte + "\\out").mkdir();
+		
+		String arquivoDestino = arquivoFonte + "\\out\\summary.csv";
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(path))) {
 			
-			sc = new Scanner(file);
-			while (sc.hasNextLine()) {
-				i = sc.nextLine().split(", ");
+			String line = br.readLine();
+			while (line != null) {
+				String[] vet = line.split(",");
+				String nomeProduto = vet[0];
+				double precoProduto = Double.parseDouble(vet[1]);
+				int quantidadeProduto = Integer.parseInt(vet[2]);
+				
+				listProduct.add(new Produto(nomeProduto, precoProduto, quantidadeProduto));
+				line = br.readLine();
 			}
 			
-			Produto product = new Produto(i[0], Double.parseDouble(i[1]), Integer.parseInt(i[2]));
-			
-			System.out.println("Nome do produto: " + product.getNome());
-			System.out.println("Preço do produto: " + product.getPreco());
-			System.out.println("Preço do produto: " + product.getQuantidade());
-			
-		}
-		catch (IOException e) {
-			System.out.println("Erro >>> " + e.getMessage());
-		}
-		finally {
-			if (sc != null) {
-				sc.close();
+			try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDestino))) {
+				
+				for (Produto iten : listProduct) {
+					bw.write(iten.getNome() + ", " + String.format("%.2f", iten.valorTotal()));
+					bw.newLine();
+				}
+				System.out.println("Arquivo " + arquivoDestino + " criado com sucesso!");
+				
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
 			}
+			
+			
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
 		
-		
-		sc.close();
+
 	}
 }
